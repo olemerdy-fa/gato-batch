@@ -2,6 +2,7 @@ package com.financeactive.gatobatch;
 
 import com.auth0.client.auth.AuthAPI;
 import com.auth0.json.auth.TokenHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,12 +21,16 @@ public class Application {
     }
 
     @Bean
-    ApplicationRunner runner(AuthAPI authAPI, RestTemplate restTemplate) {
+    ApplicationRunner runner(
+            @Value("${gato.api.endpoint}") String gatoApiEndpoint,
+            AuthAPI authAPI,
+            RestTemplate restTemplate
+    ) {
         return args -> {
-            TokenHolder holder = authAPI.requestToken("https://gato-api.herokuapp.com/").execute();
+            TokenHolder holder = authAPI.requestToken(gatoApiEndpoint).execute();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", String.format("%s %s", holder.getTokenType(), holder.getAccessToken()));
+            headers.add(HttpHeaders.AUTHORIZATION, String.format("%s %s", holder.getTokenType(), holder.getAccessToken()));
             ResponseEntity<Object> stuff = restTemplate.exchange("/user", HttpMethod.GET, new HttpEntity<>(headers), Object.class);
             System.out.println(stuff);
         };
