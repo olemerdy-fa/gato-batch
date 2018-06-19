@@ -22,12 +22,12 @@ public class Application {
 
     @Bean
     ApplicationRunner runner(
-            @Value("${gato.api.endpoint}") String gatoApiEndpoint,
+            @Value("${auth0.audience}") String auth0Audience,
             AuthAPI authAPI,
             RestTemplate restTemplate
     ) {
         return args -> {
-            TokenHolder holder = authAPI.requestToken(gatoApiEndpoint).execute();
+            TokenHolder holder = authAPI.requestToken(auth0Audience).execute();
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.AUTHORIZATION, String.format("%s %s", holder.getTokenType(), holder.getAccessToken()));
