@@ -1,7 +1,6 @@
 package com.financeactive.gatobatch.core;
 
-import com.auth0.client.auth.AuthAPI;
-import com.auth0.json.auth.TokenHolder;
+import com.financeactive.gatobatch.core.security.AccessToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Configuration
 public class CoreConfig {
@@ -30,10 +30,10 @@ public class CoreConfig {
     }
 
     @Bean
-    ClientHttpRequestInterceptor authorizationHeaderInterceptor(@Value("${auth0.audience}") String auth0Audience, AuthAPI authAPI) {
+    ClientHttpRequestInterceptor authorizationHeaderInterceptor(Supplier<AccessToken> accessTokenSupplier) {
         return (request, body, execution) -> {
-            TokenHolder holder = authAPI.requestToken(auth0Audience).execute();
-            request.getHeaders().add(HttpHeaders.AUTHORIZATION, String.format("%s %s", holder.getTokenType(), holder.getAccessToken()));
+            AccessToken holder = accessTokenSupplier.get();
+            request.getHeaders().add(HttpHeaders.AUTHORIZATION, String.format("%s %s", holder.getType(), holder.getValue()));
             return execution.execute(request, body);
         };
     }

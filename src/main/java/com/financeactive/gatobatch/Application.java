@@ -19,6 +19,8 @@ public class Application {
         return args -> {
             ResponseEntity<Object> stuff = restTemplate.getForEntity("/user", Object.class);
             System.out.println(stuff);
+            stuff = restTemplate.getForEntity("/user", Object.class);
+            System.out.println(stuff);
         };
     }
 }
