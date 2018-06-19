@@ -1,15 +1,9 @@
 package com.financeactive.gatobatch;
 
-import com.auth0.client.auth.AuthAPI;
-import com.auth0.json.auth.TokenHolder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,17 +15,9 @@ public class Application {
     }
 
     @Bean
-    ApplicationRunner runner(
-            @Value("${auth0.audience}") String auth0Audience,
-            AuthAPI authAPI,
-            RestTemplate restTemplate
-    ) {
+    ApplicationRunner runner(RestTemplate restTemplate) {
         return args -> {
-            TokenHolder holder = authAPI.requestToken(auth0Audience).execute();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.AUTHORIZATION, String.format("%s %s", holder.getTokenType(), holder.getAccessToken()));
-            ResponseEntity<Object> stuff = restTemplate.exchange("/user", HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+            ResponseEntity<Object> stuff = restTemplate.getForEntity("/user", Object.class);
             System.out.println(stuff);
         };
     }
