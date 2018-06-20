@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.stream.IntStream;
+
 @SpringBootApplication
 public class Application {
 
@@ -16,11 +18,10 @@ public class Application {
 
     @Bean
     ApplicationRunner runner(RestTemplate restTemplate) {
-        return args -> {
+        Runnable ping = () -> {
             ResponseEntity<Object> stuff = restTemplate.getForEntity("/user", Object.class);
             System.out.println(stuff);
-            stuff = restTemplate.getForEntity("/user", Object.class);
-            System.out.println(stuff);
         };
+        return args -> IntStream.range(0, 5).forEach(i -> ping.run());
     }
 }
