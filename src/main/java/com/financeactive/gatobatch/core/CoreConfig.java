@@ -1,11 +1,14 @@
 package com.financeactive.gatobatch.core;
 
 import com.financeactive.gatobatch.core.security.AccessToken;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -14,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Clock;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @Configuration
 public class CoreConfig {
@@ -24,6 +29,12 @@ public class CoreConfig {
     @Bean
     Clock clock() {
         return Clock.systemUTC();
+    }
+
+    @Bean
+    @Scope(SCOPE_PROTOTYPE)
+    Logger logger(InjectionPoint injectionPoint) {
+        return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
     }
 
     @Bean
